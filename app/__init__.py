@@ -2,7 +2,6 @@
 
 from flask import Flask
 from flask_apscheduler import APScheduler
-from config import Config
 import os
 
 app = Flask(__name__)
