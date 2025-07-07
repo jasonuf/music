@@ -2,7 +2,6 @@
 
 from flask import Flask
 from flask_apscheduler import APScheduler
-from .utils import printMessage 
 from config import Config
 
 app = Flask(__name__)
