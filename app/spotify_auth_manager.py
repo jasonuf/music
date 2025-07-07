@@ -11,6 +11,7 @@ class SpotifyAuthManager:
         self.client_id = os.getenv("CLIENT_ID")
         self.client_secret = os.getenv("CLIENT_SECRET")
         self.refresh_token = os.getenv("REFRESH_TOKEN")
+        print(self.client_id)
         self.access_token = None
         self.token_expiry_time = 0
 
