@@ -1,15 +1,6 @@
-# app/__init__.py
-
-from flask import Flask
 from flask_apscheduler import APScheduler
-from .utils import printMessage 
-from config import Config
+from app import app
 
-
-app = Flask(__name__)
-app.config.from_object(Config)
-
-from app import routes
 
 scheduler = APScheduler()
 
@@ -26,6 +17,3 @@ def job1():
 #     seconds=3
 # )
 scheduler.start()
-
-
-

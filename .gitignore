@@ -6,3 +6,4 @@ test.py
 .cache
 config.py
 __pycache__/
+.db
