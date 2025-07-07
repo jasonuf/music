@@ -6,7 +6,12 @@
     <title>Home</title>
 </head>
 <body>
-    <h1>Testing</h1>
-    <p>{{ data }}</p>
+    <h1>JASON'S Recently Played</h1>
+    <ul>
+
+      {% for artist, song in data %}
+        <li>{{ artist }}: {{ song }}</li>
+      {% endfor %}
+    </ul>
 </body>
 </html>

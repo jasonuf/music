@@ -7,3 +7,4 @@ test.py
 config.py
 __pycache__/
 .db
+data.json
