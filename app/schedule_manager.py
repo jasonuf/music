@@ -7,7 +7,7 @@ scheduler = APScheduler()
 scheduler.init_app(app)
 auth_manager = SpotifyAuthManager()
 
-@scheduler.task('interval', id='recently_played', seconds=60, misfire_grace_time=500)
+@scheduler.task('interval', id='recently_played', seconds=2700, misfire_grace_time=500)
 def recently_played():
     
     recently_played = auth_manager.get_recently_played(limit=10)
