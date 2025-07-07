@@ -29,7 +29,7 @@ else:
     }
 app.config['SCHEDULER_API_ENABLED'] = True
 
-from app import routes, schedule_manager
+from app import routes, schedule_manager, test
 
 
 
