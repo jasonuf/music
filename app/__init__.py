@@ -5,27 +5,12 @@ from flask_apscheduler import APScheduler
 from .utils import printMessage 
 from config import Config
 
-
 app = Flask(__name__)
 app.config.from_object(Config)
 
-from app import routes
+from app import routes, schedule_manager
 
-scheduler = APScheduler()
 
-scheduler.init_app(app)
-
-@scheduler.task('interval', id='do_job_1', seconds=5, misfire_grace_time=900)
-def job1():
-    print('Job 1 executed')
-# scheduler.add_job(
-#     id='print_hello_world',
-#     func=printMessage,
-#     args=('hello from the scheduler!',),
-#     trigger='interval',
-#     seconds=3
-# )
-scheduler.start()
 
 
 

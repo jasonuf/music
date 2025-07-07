@@ -9,7 +9,7 @@ class SpotifyAuthManager:
         load_dotenv()
         self.client_id = os.getenv("SPOTIFY_CLIENT_ID")
         self.client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
-        self.refresh_token = os.getenv("SPOTIFY_REFRESH_TOKEN")
+        self.refresh_token = os.getenv("REFRESH_TOKEN")
         self.access_token = None
         self.token_expiry_time = 0
 
@@ -32,10 +32,22 @@ class SpotifyAuthManager:
 
         data = {
             "grant_type": "refresh_token",
-            "refresh_token": refresh_token,
+            "refresh_token": self.refresh_token,
         }
 
         response = requests.post("https://accounts.spotify.com/api/token", headers=headers, data=data)
         token_data = response.json()
+        print("TOKEN DATA: ", token_data)
 
-        print(token_data)
+        self.access_token = token_data["access_token"]
+    
+    def get_recently_played(self):
+        token = self.get_access_token()
+
+        url = "https://api.spotify.com/v1/me/player/recently-played"
+        header = {
+            "Authorization": "Bearer " + token
+        }
+
+        response = requests.get(url=url, header=header)
+        print(response)
