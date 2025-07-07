@@ -1,0 +1,7 @@
+venv/
+.env
+.flaskenv
+app/__pycache__/
+test.py
+.cache
+config.py
