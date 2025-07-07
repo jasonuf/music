@@ -1,7 +1,6 @@
 # app/__init__.py
 
 from flask import Flask
-from flask_apscheduler import APScheduler
 import os
 from urllib.parse import urlparse
 
@@ -29,7 +28,7 @@ else:
     }
 app.config['SCHEDULER_API_ENABLED'] = True
 
-from app import routes, schedule_manager, test
+from app import routes, schedule_manager
 
 
 
