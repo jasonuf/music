@@ -6,4 +6,6 @@ app/__pycache__/
 config.py
 __pycache__/
 .db
+app/app.db
+app/test.py
 data.json

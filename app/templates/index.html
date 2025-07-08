@@ -6,12 +6,30 @@
     <title>Home</title>
 </head>
 <body>
-    <h1>JASON'S Recently Played</h1>
-    <ul>
-
-      {% for artist, song in data %}
-        <li>{{ artist }}: {{ song }}</li>
-      {% endfor %}
-    </ul>
+    <h1>JASONS MUSIC PAGE</h1>
+    <div>
+        <h3>Recently Played</h3>
+            <ul>
+                {% for play in recent_plays %}
+                    <li>{{ play.song.title }} - {{ play.song.artist }}</li>
+                {% endfor %}
+            </ul>
+    </div>
+    <div>
+        <h3>Top Artists</h3>
+            <ul>
+                {% for artist, count in top_artists %}
+                <li>{{ artist }}: {{ count }}</li>
+                {% endfor %}
+            </ul>
+    </div>
+    <div>
+        <h3>Top Songs</h3>
+            <ul>
+                {% for title, artist, count in top_songs %}
+                <li>{{ title }} - {{ artist }}: {{ count }}</li>
+                {% endfor %}
+            </ul>
+    </div>
 </body>
 </html>

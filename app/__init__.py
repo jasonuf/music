@@ -3,12 +3,14 @@
 from flask import Flask
 import os
 from urllib.parse import urlparse
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or os.urandom(20).hex()
 
 redis_url = os.environ.get('REDIS_URL')
-
 if redis_url:
     # If on Railway with Redis, parse the URL and configure the job store
     url = urlparse(redis_url)
@@ -28,7 +30,13 @@ else:
     }
 app.config['SCHEDULER_API_ENABLED'] = True
 
-from app import routes, schedule_manager
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+from app import routes, models, schedule_manager
 
 
 

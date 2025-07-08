@@ -45,11 +45,18 @@ class SpotifyAuthManager:
         token_data = response.json()
         print("RESPONSE: ", response, " RESPONSE CODE: ", response.status_code, " TOKEN DATA: ", token_data)
 
-        self.token_expiry_time = time.time() + token_data.get("expires_in", 0)
-        self.access_token = token_data.get("access_token")
+        if response.status_code == 200:
+            self.token_expiry_time = time.time() + token_data.get("expires_in", 0)
+            self.access_token = token_data.get("access_token")
+        else:
+            print("Error, Response code: ", response.status_code)
     
     def get_recently_played(self, limit=10):
         token = self.get_access_token()
+
+        if token is None:
+            print("Error: Token is None")
+            return {}
 
         url = "https://api.spotify.com/v1/me/player/recently-played" + "?limit=" + str(limit)
         headers = {
@@ -59,6 +66,32 @@ class SpotifyAuthManager:
         response = requests.get(url=url, headers=headers)
         recently_played_data = response.json()
 
-        print("RESPONSE TYPE: ", type(recently_played_data))
-        print("GET RECENTLY PLAYED DATA: ", recently_played_data)
+        #print("GET RECENTLY PLAYED DATA: ", recently_played_data)
+
         return recently_played_data
+    
+    def get_playing(self):
+        token = self.get_access_token()
+
+        if token is None:
+            print("Error: Token is None")
+            return {}
+
+        url = "https://api.spotify.com/v1/me/player"
+        headers = {
+            "Authorization": "Bearer " + token
+        }
+
+        response = requests.get(url=url, headers=headers)
+
+        if response.status_code == 200:
+            song_info = response.json()
+            song_info['status_code'] = 200
+            #print("SONG INFO: ", song_info)
+            return song_info
+        elif response.status_code == 204: #Playback not available or active
+            return {'status_code': 204}
+        elif response.status_code == 429: #The app has exceeded its rate limits.
+            return {'status_code': 429}
+        else: #token or oauth failure
+            return {'status_code': 100}
