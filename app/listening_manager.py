@@ -7,8 +7,7 @@ class ListeningManager:
 
     def check_and_update_song(self, artist, title) -> tuple[str, str]:
         if (artist, title) == self.current_song:
-            return None
+            return False
         else:
-            temp = self.current_song
             self.current_song = (artist, title)
-            return temp
+            return True
