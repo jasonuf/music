@@ -43,8 +43,11 @@ class SpotifyAuthManager:
 
         response = requests.post("https://accounts.spotify.com/api/token", headers=headers, data=data)
         token_data = response.json()
-        print("RESPONSE: ", response, " RESPONSE CODE: ", response.status_code, " TOKEN DATA: ", token_data)
 
+        print("\n GENERATING NEW ACCESS TOKEN")
+        print("RESPONSE: ", response, " RESPONSE CODE: ", response.status_code, " TOKEN DATA: ", token_data)
+        print()
+        
         if response.status_code == 200:
             self.token_expiry_time = time.time() + token_data.get("expires_in", 0)
             self.access_token = token_data.get("access_token")
