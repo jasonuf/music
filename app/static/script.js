@@ -7,6 +7,7 @@ const black_image = imageElement.src;
 
 const POLL_INTERVAL = 30_000;
 let endTimer = null;
+let firstLoad = true;
 
 const fillEl = document.querySelector('.card__progress-fill');
 
@@ -44,7 +45,7 @@ async function fetchPlaybackState() {
 
     const { title, artist, position, album, album_release, album_picture, song_length, playing} = data;
 
-    const isNewSong = songState.title !== null && (title !== songState.title || artist !== songState.artist);
+    const isNewSong = songState.title !== null && title && (title !== songState.title || artist !== songState.artist);
 
     playbackState = {
       position_ms: position,
@@ -76,6 +77,12 @@ async function fetchPlaybackState() {
     } else {
 
       endTimer = null;
+    }
+
+    if (firstLoad) {
+      updateSong();
+      firstLoad = false;
+      return;
     }
 
 
