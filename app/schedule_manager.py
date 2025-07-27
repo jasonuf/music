@@ -3,7 +3,7 @@ from app import app, db
 from app.shared_state import shared_data, data_lock
 from app.spotify_auth_manager import SpotifyAuthManager
 from app.listening_manager import ListeningManager
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from app.models import Song, PlayedHistory
 import sqlalchemy as sa
 
@@ -33,26 +33,8 @@ auth_manager = SpotifyAuthManager()
 internal_scheduler = SchedulerInternal()
 listening_manager = ListeningManager()
 
-'''
-@scheduler.task('interval', id='recently_played', seconds=2700, misfire_grace_time=500)
-def recently_played():
-    
-    recently_played = auth_manager.get_recently_played(limit=10)
 
-    artist_song = []
-
-    for dic in recently_played["items"]:
-        artists = dic["track"]["artists"]
-        artist = ""
-        if artists:
-            artist = artists[0]["name"]
-        name = dic["track"]["name"]
-        artist_song.append((artist, name))
-
-    with data_lock:
-        shared_data["recently_played"] = artist_song
-'''
-@scheduler.task('interval', id='check_listening_session', seconds=180, misfire_grace_time=50)
+@scheduler.task('interval', id='check_listening_session', seconds=120, misfire_grace_time=50)
 def check_listening_session():
 
     data = auth_manager.get_playing()
@@ -64,10 +46,32 @@ def check_listening_session():
         scheduler.pause_job('check_listening_session')
         internal_scheduler.reset_no_song_count()
         scheduler.resume_job('playing')
+        playing()
     else:
         print("\nNO PLAYING DETECTED\n")
 
-@scheduler.task('interval', id='playing', seconds=35, misfire_grace_time=7)
+def schedule_end_of_song(progress_ms, duration_ms, track_id):
+    remaining_s = (duration_ms - progress_ms) / 1000.0 + 1
+    run_time = datetime.now(timezone.utc) + timedelta(seconds=remaining_s)
+
+    job_id = f'playing_end_{track_id}'
+
+    try:
+        scheduler.remove_job(job_id)
+    except Exception:
+        pass
+
+    print("PREFIRE SCHEDULED")
+    scheduler.add_job(
+        func=playing,
+        trigger='date',
+        run_date=run_time,
+        id=job_id,
+        misfire_grace_time=5
+    )
+
+PLAYING_INTERVAL = 25
+@scheduler.task('interval', id='playing', seconds=PLAYING_INTERVAL, misfire_grace_time=7)
 def playing():
     ''' 
     NEEDED DATA TO UPDATE DATABASE:
@@ -113,6 +117,9 @@ def playing():
             artist = trackDict['artists'][0]['name']
             title = trackDict['name']
             timestamp = datetime.fromtimestamp(data['timestamp']/1000.0, tz=timezone.utc)
+            progress_ms = data['progress_ms']
+            duration_ms = data['item']['duration_ms']
+            is_playing = data['is_playing']
 
             print()
             print("TRACK: ", title)
@@ -124,6 +131,19 @@ def playing():
             print()
 
             new_song = listening_manager.check_and_update_song(artist=artist, title=title)
+            listening_manager.set_state(album=album, 
+                                        album_release=album_release_date, 
+                                        album_picture=album_picture,
+                                        artist=artist,
+                                        title=title,
+                                        progress_ms=progress_ms,
+                                        duration_ms=duration_ms,
+                                        playing=is_playing)
+
+            if (duration_ms - progress_ms) / 1000.0 <= PLAYING_INTERVAL:
+                schedule_end_of_song(progress_ms, duration_ms, title)
+
+
             if new_song:
                 print()
                 print("NEW SONG DETECTED, ADDING TO DB")
