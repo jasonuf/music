@@ -12,7 +12,6 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or os.urandom(20).hex()
 
 redis_url = os.environ.get('REDIS_URL')
 if redis_url:
-    # If on Railway with Redis, parse the URL and configure the job store
     url = urlparse(redis_url)
     app.config['SCHEDULER_JOBSTORES'] = {
         'default': {
@@ -20,11 +19,10 @@ if redis_url:
             'host': url.hostname,
             'port': url.port,
             'password': url.password,
-            'db': 0  # Use the default Redis database
+            'db': 0 
         }
     }
 else:
-    # For local development without Redis, use the default in-memory store
     app.config['SCHEDULER_JOBSTORES'] = {
         'default': {'type': 'memory'}
     }

@@ -1,6 +1,5 @@
 from flask import render_template, jsonify
 from app import app, db
-from app.shared_state import shared_data, data_lock
 import sqlalchemy as sa
 from app.models import Song, PlayedHistory
 from app.schedule_manager import listening_manager
@@ -10,12 +9,6 @@ from datetime import datetime, timezone
 @app.route('/')
 @app.route('/index')
 def index():
-
-    '''
-    Global variable for testing:
-    with data_lock:
-        result = shared_data.get("recently_played", [])
-    '''
     
     top_artists_query = (
         sa.select(

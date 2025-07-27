@@ -1,6 +1,5 @@
 from flask_apscheduler import APScheduler
 from app import app, db
-from app.shared_state import shared_data, data_lock
 from app.spotify_auth_manager import SpotifyAuthManager
 from app.listening_manager import ListeningManager
 from datetime import datetime, timezone, timedelta

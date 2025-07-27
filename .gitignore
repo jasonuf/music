@@ -4,8 +4,15 @@ venv/
 app/__pycache__/
 .cache
 config.py
-__pycache__/
 .db
 app/app.db
-app/test.py
+
+
 data.json
+test.py
+app/test.py
+Procfile
+__pycache__/
+app/authscript.py
+app/shared_state.py
+app/test.py

@@ -16,7 +16,6 @@ class Song(db.Model):
         back_populates='song', cascade='all, delete-orphan'
     )
 
-    # Ensures that the combination of a title and artist is unique
     __table_args__ = (
         sa.UniqueConstraint('title', 'artist', name='_title_artist_uc'),
     )
