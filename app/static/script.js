@@ -44,7 +44,7 @@ async function fetchPlaybackState() {
 
     const { title, artist, position, album, album_release, album_picture, song_length, playing} = data;
 
-    const isNewSong = title !== songState.title || artist !== songState.artist;
+    const isNewSong = songState.title !== null && (title !== songState.title || artist !== songState.artist);
 
     playbackState = {
       position_ms: position,
