@@ -92,6 +92,14 @@ def playing():
     print()
 
     if status_code == 204:
+        listening_manager.set_state(album=None, 
+                                    album_release=None, 
+                                    album_picture=None,
+                                    artist=None,
+                                    title=None,
+                                    progress_ms=0,
+                                    duration_ms=1,
+                                    playing=False)
         if internal_scheduler.increment_no_song_count():
             print()
             print("PLAYING STOPPED - SWITCHING TO CHECK_LISTENING_SESSION")

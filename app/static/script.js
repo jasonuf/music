@@ -45,7 +45,8 @@ async function fetchPlaybackState() {
 
     const { title, artist, position, album, album_release, album_picture, song_length, playing} = data;
 
-    const isNewSong = songState.title !== null && title && (title !== songState.title || artist !== songState.artist);
+    const isNewSong = title && (title !== songState.title || artist !== songState.artist);
+    const stoppedPlaying = !title && (title !== songState.title || artist !== songState.artist);
 
     playbackState = {
       position_ms: position,
@@ -79,12 +80,26 @@ async function fetchPlaybackState() {
       endTimer = null;
     }
 
+    if (!title){
+      curr_state.innerHTML = `<i>Paused</i>`;
+    }
+    else if (!playbackState.is_playing){
+      curr_state.innerHTML = `<i>Paused</i>`;
+    }
+    else{
+      curr_state.innerHTML = `<i>Playing</i>`;
+    }
+
     if (firstLoad) {
       updateSong();
       firstLoad = false;
       return;
     }
 
+    if (stoppedPlaying){
+      updateSong();
+      return;
+    }
 
     if (songState.new_song){
       updateSong();
@@ -93,15 +108,7 @@ async function fetchPlaybackState() {
       songState.new_song = false;
     }
 
-    if (!title){
-      curr_state.textContent = `Paused`;
-    }
-    else if (!playbackState.is_playing){
-      curr_state.textContent = `Paused`;
-    }
-    else{
-      curr_state.textContent = `Playing`;
-    }
+    
 
   } catch (error) {
     console.error("Could not fetch data:", error);
@@ -177,7 +184,7 @@ function updateCounts({ artist, title, album }) {
     }
   );
 
-  // Top Albums: key = album name
+
   bumpAndReorder(
     '#top_albums',
     key => key === album,
